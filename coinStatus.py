@@ -108,6 +108,7 @@ def get_poolStats(soupPool, wallet_id):
 #First run change says 0	
 email_body=""
 loop = 1
+print '______________________'
 while loop == 1 :
  	
  	email_body=""
@@ -195,5 +196,7 @@ while loop == 1 :
 	else:	
 	     firstRun = 0			
 	     time.sleep(checkTimer)
+	     
+	print '______________________'
 	
 print "Done"
