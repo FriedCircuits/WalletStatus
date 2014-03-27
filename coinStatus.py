@@ -24,6 +24,7 @@ transOut = 0
 
 failCount = 0
 totalFailed = 0
+totalRuns = 0
 
 
 #Time in between checks in seconds
@@ -33,7 +34,7 @@ failTimer = 60
 firstRun = 1
 
 #Gmail Settings
-GMAIL_USER = 'smtp@domain.com'
+GMAIL_USER = 'user@domain.com'
 GMAIL_PASS = 'password'
 SMTP_SERVER = 'smtp.server.com'
 SMTP_PORT = 587
@@ -113,6 +114,8 @@ while loop == 1 :
  	
  	email_body=""
  	email_body_html=""
+ 	failCount = 0
+ 	totalRuns += 1
 	for idx in range(0, len(wallets)):
 		wallet_id = wallets[idx]
 		transURL = URLAdd + str(wallet_id)
@@ -174,24 +177,25 @@ while loop == 1 :
 			
 			email_body += str(wallet_id) + ' currently has ' + str(balNow) +  coinShort + '. Tranactions in: ' + str(transCount) + ' Transactions out: ' + str(transOut) + '. Change: ' + str(balChange) + coinShort + ', in ' + str(transChange) + ' transactions, ' + ' in the past ' + str(checkTimer/60) + ' minutes\n'
 			email_body_html += '<FONT COLOR=blue><b><a href=' + transURL + '> ' + str(wallet_id) + '</a>: </b></FONT>' + '<BR> Currently has <FONT COLOR=RED><b>' + str(balNow) + '</b></FONT>' + coinShort + ' <BR> Transactions in: <FONT COLOR=RED><b>' + str(transCount) + '</b></FONT> <BR> Transactions out: <FONT COLOR=RED><b>' + str(transOut) + '</b></FONT><BR> Change: <FONT COLOR=RED><b>' + str(balChange) + '</b></FONT> ' + coinShort + ', in <FONT COLOR=RED><b>' + str(transChange) + '</b></FONT> transactions, in the past <FONT COLOR=BLUE><b>' + str(checkTimer/60) + '</b></FONT> minutes<br><br>\n'
-			email_body_html += '<B>Failed Fetch: </B>' + str(failCount) + '\n'
 		
-	if (email_body != ""):	
+	if (email_body != ""):
+		email_body_html += '<B>Failed fetch error count: </B>' + str(failCount) + '\n'	
 		print email_body
 		send_email(RECIPIENT, coin + '-P2Pool - Current Status', email_body, email_body_html)
 	else:
-		if (failCount > 0):
-		     print 'Complete failed fetch'
-		else:     
+		if (failCount == 0):     
 		     print "No Change"
+		else:
+		     print 'Complete fetch failure'
 	
 	#Check if we had a failed fetch if so try again. If first run flag won't be cleared till we have a successfull fetch
 	if (failCount > 0):
 	     totalFailed += 1
 	     print 'Failed Fetch Count: ' + str(failCount)
 	     print 'Running total failed runs: ' + str(totalFailed)
+	     print 'Total runs: ' + str(totalRuns)
+	     print 'Percent failed ' + str((totalRuns/totalFailed)*100) + '%'
 	     print 'Error: Waiting to try again in ' + str(failTimer) + ' seconds'
-	     failCount = 0
 	     time.sleep(failTimer)
 	else:	
 	     firstRun = 0			
