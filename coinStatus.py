@@ -113,7 +113,6 @@ while loop == 1 :
  	
  	email_body=""
  	email_body_html=""
- 	failCount = 0
 	for idx in range(0, len(wallets)):
 		wallet_id = wallets[idx]
 		transURL = URLAdd + str(wallet_id)
@@ -192,6 +191,7 @@ while loop == 1 :
 	     print 'Failed Fetch Count: ' + str(failCount)
 	     print 'Running total failed runs: ' + str(totalFailed)
 	     print 'Error: Waiting to try again in ' + str(failTimer) + ' seconds'
+	     failCount = 0
 	     time.sleep(failTimer)
 	else:	
 	     firstRun = 0			
