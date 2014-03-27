@@ -22,9 +22,13 @@ coin = 'Vertcoin'
 coinShort = 'VTC'
 transOut = 0
 
+failCount = 0
+totalFailed = 0
+
 
 #Time in between checks in seconds
 checkTimer = 900 
+failTimer = 60
 
 firstRun = 1
 
@@ -108,6 +112,7 @@ while loop == 1 :
  	
  	email_body=""
  	email_body_html=""
+ 	failCount = 0
 	for idx in range(0, len(wallets)):
 		wallet_id = wallets[idx]
 		transURL = URLAdd + str(wallet_id)
@@ -119,7 +124,11 @@ while loop == 1 :
 		     req = Request(balURL, headers = {'User-Agent' : user_agent})
 		     balpage = urlopen(req).read()
 		except urllib2.HTTPError, e:
-		     print e.fp.read()
+		     #print e.fp.read()
+		     print 'HTTP Error: ' + str(e.code)
+		     print 'Balance fetch failed'
+		     failCount += 1
+		     break
 
 		#print balpage
 		
@@ -127,13 +136,22 @@ while loop == 1 :
 		     req2 = Request(transURL, headers = {'User-Agent' : user_agent}) 
 		     transpage = urlopen(req2).read()
 		except urllib2.HTTPError, e:
-		     print e.fp.read()
+		     #print e.fp.read()
+		     print 'HTTP Error: ' + str(e.code)
+		     print 'Transaction fetch failed' 
+		     failCount += 1
+		     break
 		     
 		try:
 		     req3 = Request(poolURL, headers = {'User-Agent' : user_agent}) 
 		     poolpage = urlopen(req3).read()
 		except urllib2.HTTPError, e:
-		     print e.fp.read()		     
+		     #print e.fp.read()
+		     print 'HTTP Error: ' + str(e.code)
+		     print 'Pool fetch failed'
+		     failCount += 1
+		     break
+		     	     
 
 
 		soupAdd = BeautifulSoup(transpage)
@@ -156,14 +174,26 @@ while loop == 1 :
 			
 			email_body += str(wallet_id) + ' currently has ' + str(balNow) +  coinShort + '. Tranactions in: ' + str(transCount) + ' Transactions out: ' + str(transOut) + '. Change: ' + str(balChange) + coinShort + ', in ' + str(transChange) + ' transactions, ' + ' in the past ' + str(checkTimer/60) + ' minutes\n'
 			email_body_html += '<FONT COLOR=blue><b><a href=' + transURL + '> ' + str(wallet_id) + '</a>: </b></FONT>' + '<BR> Currently has <FONT COLOR=RED><b>' + str(balNow) + '</b></FONT>' + coinShort + ' <BR> Transactions in: <FONT COLOR=RED><b>' + str(transCount) + '</b></FONT> <BR> Transactions out: <FONT COLOR=RED><b>' + str(transOut) + '</b></FONT><BR> Change: <FONT COLOR=RED><b>' + str(balChange) + '</b></FONT> ' + coinShort + ', in <FONT COLOR=RED><b>' + str(transChange) + '</b></FONT> transactions, in the past <FONT COLOR=BLUE><b>' + str(checkTimer/60) + '</b></FONT> minutes<br><br>\n'
+			email_body_html += '<B>Failed Fetch: </B>' + str(failCount) + '\n'
 		
 	if (email_body != ""):	
 		print email_body
 		send_email(RECIPIENT, coin + '-P2Pool - Current Status', email_body, email_body_html)
 	else:
-		print "No Change"
-
-	firstRun = 0			
-	time.sleep(checkTimer)
+		if (failCount > 0):
+		     print 'Complete failed fetch'
+		else:     
+		     print "No Change"
+	
+	#Check if we had a failed fetch if so try again. If first run flag won't be cleared till we have a successfull fetch
+	if (failCount > 0):
+	     totalFailed += 1
+	     print 'Failed Fetch Count: ' + str(failCount)
+	     print 'Running total failed runs: ' + str(totalFailed)
+	     print 'Error: Waiting to try again in ' + str(failTimer) + ' seconds'
+	     time.sleep(failTimer)
+	else:	
+	     firstRun = 0			
+	     time.sleep(checkTimer)
 	
 print "Done"
