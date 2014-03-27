@@ -3,19 +3,20 @@ WalletStatus
 
 Emails balance changes for your coin. Data is parsed from a site running Abe Block Explorer. Useful for wallets you are mining to like from a P2Pool.
 
-Right now there is a bug when the page has a timeout (HTTP 504) and can affect the balance incorrectly. Need to add a check for HTTP status and or the data is valid.
+Includes error handling of failed attempts to fetch data from site. If there is a partial success then email will still be sent and failed count be at the bottom of the email. Command prompt output will give you more detials during and at the end of each run. 
 
-Orginally I was going also pool stats from a P2Pool status page, but you can ignore the code for that.
+Orginally I was going also pool stats from a P2Pool status page, but you can ignore the code for now.
 
-Other than that it works great, 
+Orginally I created this while mining Vertcoin but should work for any coin that has a site runing ABE Block Exploere from https://github.com/bitcoin-abe/bitcoin-abe
+
 
 Things to configure 
 
-Wallets you want to track and make sure each array has the same amount of elements that zero as the starting value.
+Wallets you want to track and make sure each array has the same amount of elements with zero as the starting value.
 
-Email SMTP settings.
+Email SMTP settings: Doesn't have to be GMAIL, just any SMTP server will do
 
-Address of block exporer
+Address of block exporer and URL to balance using API
 
 
 
