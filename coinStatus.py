@@ -1,4 +1,7 @@
 #! /usr/bin/python
+#Wallet Status - William Garrido - License - CC-SA
+#http://mobilewill.us and http://github.com/friedcircuits
+
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -29,7 +32,7 @@ totalRuns = 0
 
 #Time in between checks in seconds
 checkTimer = 900 
-failTimer = 60
+failTimer = 120
 
 firstRun = 1
 
