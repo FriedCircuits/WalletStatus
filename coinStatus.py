@@ -197,7 +197,7 @@ while loop == 1 :
 	     print 'Failed Fetch Count: ' + str(failCount)
 	     print 'Running total failed runs: ' + str(totalFailed)
 	     print 'Total runs: ' + str(totalRuns)
-	     print 'Percent failed ' + str((totalRuns/totalFailed)*100) + '%'
+	     print 'Percent failed ' + "{0:.2f}".format(float(totalFailed)/float(totalRuns)*100) + '%'
 	     print 'Error: Waiting to try again in ' + str(failTimer) + ' seconds'
 	     time.sleep(failTimer)
 	else:	
