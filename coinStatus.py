@@ -41,10 +41,10 @@ GMAIL_USER = 'user@domain.com'
 GMAIL_PASS = 'password'
 SMTP_SERVER = 'smtp.server.com'
 SMTP_PORT = 587
-RECIPIENT = 'user@domain.com'
+RECIPIENT = ['user@domain.com']
 
 
-def send_email(recipient, subject, text, html):
+def send_email(subject, text, html):
     smtpserver = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
     smtpserver.ehlo()
     smtpserver.starttls()
@@ -55,7 +55,7 @@ def send_email(recipient, subject, text, html):
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = GMAIL_USER
-    msg['To'] = recipient
+    msg['To'] = ', '.join( RECIPIENT )
     
     #Old code below
     #header = 'To:' + recipient + '\n' + 'From: ' + GMAIL_USER
@@ -82,7 +82,7 @@ def send_email(recipient, subject, text, html):
     msg.attach(part1)
     msg.attach(part2)
     
-    smtpserver.sendmail(GMAIL_USER, recipient, msg.as_string())
+    smtpserver.sendmail(GMAIL_USER, RECIPIENT, msg.as_string())
     smtpserver.close()
     
 #Searches site for current transactions
@@ -184,7 +184,7 @@ while loop == 1 :
 	if (email_body != ""):
 		email_body_html += '<B>Failed fetch error count: </B>' + str(failCount) + '\n'	
 		print email_body
-		send_email(RECIPIENT, coin + '-P2Pool - Current Status', email_body, email_body_html)
+		send_email(coin + '-P2Pool - Current Status', email_body, email_body_html)
 	else:
 		if (failCount == 0):     
 		     print "No Change"
